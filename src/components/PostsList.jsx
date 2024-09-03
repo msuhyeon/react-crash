@@ -1,20 +1,28 @@
-import { useState, useEffect } from "react";
-import NewPost from "./NewPost";
+import { useLoaderData } from "react-router-dom";
+
 import Post from "./Post";
-import Modal from "./Modal";
 import classes from "./PostsList.module.css";
 
-function PostList({ isPosting, onStopPosting }) {
-  const [posts, setPosts] = useState([]);
+function PostList() {
+  const posts = useLoaderData();
+  // posts는 useLoaderData로 부터 데이터를 받고,
+  // 이는 현재 활성화되어있는 라우트로부터 호출된 loader()에서 반환된다.
 
-  useEffect(() => {
-    async function fetchPosts() {
-      const response = await fetch("http://localhost:8080/posts");
-      const resData = await response.json();
+  // 데이터를 loader에서 가져오기 때문에 필요 없음
+  // useEffect(() => {
+  //   async function fetchPosts() {
+  //     setIsFetching(true);
 
-      setPosts(resData.posts);
-    }
-  }, []);
+  //     // loader 함수로 옮김
+  //     // const response = await fetch("http://localhost:8080/posts");
+  //     // const resData = await response.json();
+
+  //     setPosts(resData.posts);
+  //     setIsFetching(false);
+  //   }
+
+  //   fetchPosts();
+  // }, []);
 
   // let modalContent;
   // if (modalIsVisible) {
@@ -29,29 +37,17 @@ function PostList({ isPosting, onStopPosting }) {
   //   );
   // }
 
-  function addPostsHandler(postData) {
-    fetch("http://localhost:8080/posts", {
-      method: "POST",
-      body: JSON.stringify(postData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    setPosts((existingPost) => [postData, ...existingPost]); // 새로 입력한 포스트가 맨 위로, 그다음 기존 포스트
-  }
-
   return (
     <>
-      {/* {modalContent} */}
-      {isPosting && (
-        <Modal onClose={onStopPosting}>
-          <NewPost onCancel={onStopPosting} onAddPost={addPostsHandler} />
-        </Modal>
-      )}
       {posts.length > 0 && (
         <ul className={classes.posts}>
           {posts.map((post) => (
-            <Post key={post.body} author={post.author} body={post.body} />
+            <Post
+              key={post.id}
+              id={post.id}
+              author={post.author}
+              body={post.body}
+            />
           ))}
           {/* <Post author="Mayo" body="I am the cutest kitty in the world! " /> */}
         </ul>
